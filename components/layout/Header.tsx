@@ -1,14 +1,21 @@
+import { getLocale } from 'next-intl/server'
 import { getCurrentUser } from '@/lib/dal'
 import { LogoutButton } from '@/components/auth/LogoutButton'
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import type { Locale } from '@/lib/locale'
 
 /**
- * Renders the top header bar with the current user's name, email, and logout button.
+ * Renders the top header bar with the current user's name, email,
+ * a language switcher, and a logout button.
  * Uses the cached getCurrentUser() DAL function to avoid a redundant DB query.
  */
 export async function Header() {
-  const user = await getCurrentUser()
+  const [user, locale] = await Promise.all([
+    getCurrentUser(),
+    getLocale() as Promise<Locale>,
+  ])
 
   const initials = user?.name
     ? user.name
@@ -22,7 +29,9 @@ export async function Header() {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-6">
       <div />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <LanguageSwitcher currentLocale={locale} />
+        <Separator orientation="vertical" className="h-5" />
         <div className="flex items-center gap-3">
           <Avatar className="h-7 w-7">
             <AvatarFallback className="bg-foreground text-background text-[10px] font-semibold">

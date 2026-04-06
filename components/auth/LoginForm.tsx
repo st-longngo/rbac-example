@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { loginAction } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -8,6 +9,7 @@ import { FormField } from '@/components/auth/FormField'
 import Link from 'next/link'
 
 export function LoginForm() {
+  const t = useTranslations('auth.login')
   const [state, action, isPending] = useActionState(loginAction, undefined)
 
   return (
@@ -20,7 +22,7 @@ export function LoginForm() {
 
       <FormField
         id="email"
-        label="Email"
+        label={t('emailLabel')}
         type="email"
         placeholder="admin@example.com"
         autoComplete="email"
@@ -30,21 +32,22 @@ export function LoginForm() {
 
       <FormField
         id="password"
-        label="Mật khẩu"
+        label={t('passwordLabel')}
         type="password"
+        placeholder={t('passwordPlaceholder')}
         autoComplete="current-password"
         required
         error={state?.errors?.password?.[0]}
       />
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
+      <Button type="submit" className="w-full" disabled={isPending} size="lg">
+        {isPending ? t('submitting') : t('submit')}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Chưa có tài khoản?{' '}
+        {t('noAccount')}{' '}
         <Link href="/register" className="text-primary hover:underline font-medium">
-          Đăng ký
+          {t('registerLink')}
         </Link>
       </p>
     </form>

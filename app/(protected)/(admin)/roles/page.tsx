@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { requirePermission } from '@/lib/dal'
 import { prisma } from '@/lib/prisma'
 import {
@@ -13,6 +14,7 @@ import { RoleBadge } from '@/components/rbac/RoleBadge'
 
 export default async function RolesPage() {
   await requirePermission('MANAGE', 'ROLES')
+  const t = await getTranslations('roles')
 
   const roles = await prisma.role.findMany({
     select: {
@@ -36,9 +38,14 @@ export default async function RolesPage() {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Phân quyền</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{roles.length}</span> roles trong hệ thống
+          {t.rich('count', {
+            count: roles.length,
+            strong: (chunks) => (
+              <span className="font-medium text-foreground">{chunks}</span>
+            ),
+          })}
         </p>
       </div>
 
@@ -47,10 +54,10 @@ export default async function RolesPage() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[140px]">Role</TableHead>
-              <TableHead>Mô tả</TableHead>
-              <TableHead className="w-[100px]">Users</TableHead>
-              <TableHead>Permissions</TableHead>
+              <TableHead className="w-[140px]">{t('table.role')}</TableHead>
+              <TableHead>{t('table.description')}</TableHead>
+              <TableHead className="w-[100px]">{t('table.users')}</TableHead>
+              <TableHead>{t('table.permissions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

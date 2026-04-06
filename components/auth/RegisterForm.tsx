@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { registerAction } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -8,6 +9,7 @@ import { FormField } from '@/components/auth/FormField'
 import Link from 'next/link'
 
 export function RegisterForm() {
+  const t = useTranslations('auth.register')
   const [state, action, isPending] = useActionState(registerAction, undefined)
 
   return (
@@ -20,17 +22,17 @@ export function RegisterForm() {
 
       <FormField
         id="name"
-        label="Họ tên"
-        placeholder="Nguyễn Văn A"
+        label={t('nameLabel')}
+        placeholder={t('namePlaceholder')}
         required
         error={state?.errors?.name?.[0]}
       />
 
       <FormField
         id="email"
-        label="Email"
+        label={t('emailLabel')}
         type="email"
-        placeholder="user@example.com"
+        placeholder={t('emailPlaceholder')}
         autoComplete="email"
         required
         error={state?.errors?.email?.[0]}
@@ -38,7 +40,7 @@ export function RegisterForm() {
 
       <FormField
         id="password"
-        label="Mật khẩu"
+        label={t('passwordLabel')}
         type="password"
         autoComplete="new-password"
         required
@@ -47,21 +49,21 @@ export function RegisterForm() {
 
       <FormField
         id="confirmPassword"
-        label="Xác nhận mật khẩu"
+        label={t('confirmPasswordLabel')}
         type="password"
         autoComplete="new-password"
         required
         error={state?.errors?.confirmPassword?.[0]}
       />
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
+      <Button type="submit" className="w-full" disabled={isPending} size="lg">
+        {isPending ? t('submitting') : t('submit')}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Đã có tài khoản?{' '}
+        {t('hasAccount')}{' '}
         <Link href="/login" className="text-primary hover:underline font-medium">
-          Đăng nhập
+          {t('loginLink')}
         </Link>
       </p>
     </form>

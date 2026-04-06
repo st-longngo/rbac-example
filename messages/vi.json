@@ -1,0 +1,128 @@
+{
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "description": "Nhập email và mật khẩu để truy cập hệ thống",
+      "emailLabel": "Email",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Đăng nhập",
+      "submitting": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "registerLink": "Đăng ký",
+      "errors": {
+        "invalidCredentials": "Email hoặc mật khẩu không đúng.",
+        "accountDisabled": "Tài khoản này đã bị vô hiệu hóa.",
+        "generic": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "description": "Điền thông tin để tạo tài khoản mới",
+      "nameLabel": "Họ tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "emailLabel": "Email",
+      "emailPlaceholder": "user@example.com",
+      "passwordLabel": "Mật khẩu",
+      "confirmPasswordLabel": "Xác nhận mật khẩu",
+      "submit": "Tạo tài khoản",
+      "submitting": "Đang tạo tài khoản...",
+      "hasAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập",
+      "errors": {
+        "emailTaken": "Email này đã được đăng ký.",
+        "passwordMismatch": "Mật khẩu xác nhận không khớp.",
+        "generic": "Đăng ký thất bại. Vui lòng thử lại."
+      }
+    },
+    "logout": "Đăng xuất"
+  },
+  "nav": {
+    "menu": "Menu",
+    "myRoles": "Vai trò",
+    "brand": "RBAC Module",
+    "items": {
+      "dashboard": "Dashboard",
+      "reports": "Báo cáo",
+      "orders": "Đơn hàng",
+      "users": "Người dùng",
+      "roles": "Phân quyền"
+    }
+  },
+  "dashboard": {
+    "greetingMorning": "Chào buổi sáng",
+    "greetingAfternoon": "Chào buổi chiều",
+    "greetingEvening": "Chào buổi tối",
+    "title": "Dashboard",
+    "accessCount": "Bạn có quyền truy cập vào <strong>{count}</strong> tính năng.",
+    "noAccess": "Tài khoản của bạn chưa được cấp quyền truy cập vào tính năng nào.",
+    "quickAccess": "Truy cập nhanh",
+    "stats": {
+      "users": "Người dùng",
+      "roles": "Roles",
+      "permissions": "Permissions",
+      "assignments": "Phân công"
+    },
+    "modules": {
+      "reports": "Báo cáo",
+      "reportsDesc": "Xem và quản lý báo cáo",
+      "orders": "Đơn hàng",
+      "ordersDesc": "Quản lý đơn hàng",
+      "users": "Người dùng",
+      "usersDesc": "Quản lý tài khoản & roles",
+      "roles": "Phân quyền",
+      "rolesDesc": "Quản lý roles & permissions"
+    }
+  },
+  "users": {
+    "title": "Người dùng",
+    "count": "<strong>{count}</strong> người dùng trong hệ thống",
+    "table": {
+      "name": "Tên",
+      "email": "Email",
+      "roles": "Roles",
+      "createdAt": "Ngày tạo",
+      "id": "ID"
+    },
+    "noName": "Chưa đặt tên",
+    "noRole": "Không có role"
+  },
+  "roles": {
+    "title": "Phân quyền",
+    "count": "<strong>{count}</strong> roles trong hệ thống",
+    "table": {
+      "role": "Role",
+      "description": "Mô tả",
+      "users": "Users",
+      "permissions": "Permissions"
+    }
+  },
+  "reports": {
+    "title": "Báo cáo",
+    "description": "Xem và quản lý báo cáo hệ thống",
+    "underDevelopment": "Chức năng đang được phát triển..."
+  },
+  "orders": {
+    "title": "Đơn hàng",
+    "description": "Quản lý đơn hàng của hệ thống",
+    "underDevelopment": "Chức năng đang được phát triển..."
+  },
+  "errors": {
+    "unauthorized": {
+      "code": "401",
+      "title": "Chưa xác thực",
+      "description": "Bạn cần đăng nhập để truy cập trang này.",
+      "loginLink": "Đăng nhập"
+    },
+    "forbidden": {
+      "code": "403",
+      "title": "Không có quyền truy cập",
+      "description": "Bạn không có quyền truy cập vào tài nguyên này.",
+      "backLink": "Về Dashboard"
+    }
+  },
+  "locale": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  }
+}

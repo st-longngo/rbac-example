@@ -1,0 +1,128 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "description": "Enter your email and password to access the system",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register",
+      "errors": {
+        "invalidCredentials": "Invalid email or password.",
+        "accountDisabled": "This account has been disabled.",
+        "generic": "An error occurred. Please try again."
+      }
+    },
+    "register": {
+      "title": "Create Account",
+      "description": "Fill in your information to create a new account",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "John Smith",
+      "emailLabel": "Email",
+      "emailPlaceholder": "user@example.com",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm Password",
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign In",
+      "errors": {
+        "emailTaken": "This email is already registered.",
+        "passwordMismatch": "Passwords do not match.",
+        "generic": "Registration failed. Please try again."
+      }
+    },
+    "logout": "Sign Out"
+  },
+  "nav": {
+    "menu": "Menu",
+    "myRoles": "My Roles",
+    "brand": "RBAC Module",
+    "items": {
+      "dashboard": "Dashboard",
+      "reports": "Reports",
+      "orders": "Orders",
+      "users": "Users",
+      "roles": "Roles & Permissions"
+    }
+  },
+  "dashboard": {
+    "greetingMorning": "Good morning",
+    "greetingAfternoon": "Good afternoon",
+    "greetingEvening": "Good evening",
+    "title": "Dashboard",
+    "accessCount": "You have access to <strong>{count}</strong> features.",
+    "noAccess": "Your account has not been granted access to any features.",
+    "quickAccess": "Quick Access",
+    "stats": {
+      "users": "Users",
+      "roles": "Roles",
+      "permissions": "Permissions",
+      "assignments": "Assignments"
+    },
+    "modules": {
+      "reports": "Reports",
+      "reportsDesc": "View and manage reports",
+      "orders": "Orders",
+      "ordersDesc": "Manage orders",
+      "users": "Users",
+      "usersDesc": "Manage accounts & roles",
+      "roles": "Roles & Permissions",
+      "rolesDesc": "Manage roles & permissions"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "count": "<strong>{count}</strong> users in the system",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "roles": "Roles",
+      "createdAt": "Created",
+      "id": "ID"
+    },
+    "noName": "No name set",
+    "noRole": "No role"
+  },
+  "roles": {
+    "title": "Roles & Permissions",
+    "count": "<strong>{count}</strong> roles in the system",
+    "table": {
+      "role": "Role",
+      "description": "Description",
+      "users": "Users",
+      "permissions": "Permissions"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "View and manage system reports",
+    "underDevelopment": "This feature is under development..."
+  },
+  "orders": {
+    "title": "Orders",
+    "description": "Manage system orders",
+    "underDevelopment": "This feature is under development..."
+  },
+  "errors": {
+    "unauthorized": {
+      "code": "401",
+      "title": "Unauthenticated",
+      "description": "You need to sign in to access this page.",
+      "loginLink": "Sign In"
+    },
+    "forbidden": {
+      "code": "403",
+      "title": "Access Denied",
+      "description": "You do not have permission to access this page.",
+      "backLink": "Back to Dashboard"
+    }
+  },
+  "locale": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  }
+}

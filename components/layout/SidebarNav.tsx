@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { LayoutDashboard, Users, Shield, FileText, ShoppingCart } from 'lucide-react'
 import { checkPermission } from '@/lib/dal'
 import { RoleBadge } from '@/components/rbac/RoleBadge'
@@ -8,15 +9,17 @@ interface SidebarNavProps {
   roles: string[]
 }
 
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, action: 'READ' as const, resource: 'DASHBOARD' as const },
-  { href: '/reports', label: 'Báo cáo', icon: FileText, action: 'READ' as const, resource: 'REPORTS' as const },
-  { href: '/orders', label: 'Đơn hàng', icon: ShoppingCart, action: 'READ' as const, resource: 'ORDERS' as const },
-  { href: '/users', label: 'Người dùng', icon: Users, action: 'READ' as const, resource: 'USERS' as const },
-  { href: '/roles', label: 'Phân quyền', icon: Shield, action: 'MANAGE' as const, resource: 'ROLES' as const },
-]
-
 export async function SidebarNav({ roles }: SidebarNavProps) {
+  const t = await getTranslations('nav')
+
+  const navItems = [
+    { href: '/dashboard', label: t('items.dashboard'), icon: LayoutDashboard, action: 'READ' as const, resource: 'DASHBOARD' as const },
+    { href: '/reports', label: t('items.reports'), icon: FileText, action: 'READ' as const, resource: 'REPORTS' as const },
+    { href: '/orders', label: t('items.orders'), icon: ShoppingCart, action: 'READ' as const, resource: 'ORDERS' as const },
+    { href: '/users', label: t('items.users'), icon: Users, action: 'READ' as const, resource: 'USERS' as const },
+    { href: '/roles', label: t('items.roles'), icon: Shield, action: 'MANAGE' as const, resource: 'ROLES' as const },
+  ]
+
   const visibleItems = await Promise.all(
     navItems.map(async (item) => {
       const allowed = await checkPermission(item.action, item.resource)
@@ -33,13 +36,13 @@ export async function SidebarNav({ roles }: SidebarNavProps) {
         <div className="flex h-6 w-6 items-center justify-center rounded bg-foreground">
           <Shield className="h-3.5 w-3.5 text-background" />
         </div>
-        <span className="text-sm font-semibold tracking-tight">RBAC Module</span>
+        <span className="text-sm font-semibold tracking-tight">{t('brand')}</span>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-5">
         <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-          Menu
+          {t('menu')}
         </p>
         <div className="flex flex-col gap-0.5">
           {items.map((item) => (
@@ -56,7 +59,7 @@ export async function SidebarNav({ roles }: SidebarNavProps) {
       {/* Roles footer */}
       <div className="shrink-0 border-t px-5 py-4">
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-          Vai trò
+          {t('myRoles')}
         </p>
         <div className="flex flex-wrap gap-1">
           {roles.map((role) => (

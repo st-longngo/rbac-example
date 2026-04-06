@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { verifySession, checkPermission } from '@/lib/dal'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
@@ -6,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 
 export default async function DashboardPage() {
   await verifySession()
+  const t = await getTranslations('dashboard')
 
   const [canManageUsers, canManageRoles, canReadReports, canReadOrders] =
     await Promise.all([
@@ -24,21 +26,26 @@ export default async function DashboardPage() {
   ])
 
   const stats = [
-    { label: 'Người dùng', value: userCount },
-    { label: 'Roles', value: roleCount },
-    { label: 'Permissions', value: permissionCount },
-    { label: 'Phân công', value: assignmentCount },
+    { label: t('stats.users'), value: userCount },
+    { label: t('stats.roles'), value: roleCount },
+    { label: t('stats.permissions'), value: permissionCount },
+    { label: t('stats.assignments'), value: assignmentCount },
   ].filter((s): s is { label: string; value: number } => s.value !== null)
 
   const modules = [
-    { show: canReadReports, href: '/reports', icon: FileText, title: 'Báo cáo', description: 'Xem và quản lý báo cáo' },
-    { show: canReadOrders, href: '/orders', icon: ShoppingCart, title: 'Đơn hàng', description: 'Quản lý đơn hàng' },
-    { show: canManageUsers, href: '/users', icon: Users, title: 'Người dùng', description: 'Quản lý tài khoản & roles' },
-    { show: canManageRoles, href: '/roles', icon: Shield, title: 'Phân quyền', description: 'Quản lý roles & permissions' },
+    { show: canReadReports, href: '/reports', icon: FileText, title: t('modules.reports'), description: t('modules.reportsDesc') },
+    { show: canReadOrders, href: '/orders', icon: ShoppingCart, title: t('modules.orders'), description: t('modules.ordersDesc') },
+    { show: canManageUsers, href: '/users', icon: Users, title: t('modules.users'), description: t('modules.usersDesc') },
+    { show: canManageRoles, href: '/roles', icon: Shield, title: t('modules.roles'), description: t('modules.rolesDesc') },
   ].filter((c) => c.show)
 
   const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối'
+  const greeting =
+    hour < 12
+      ? t('greetingMorning')
+      : hour < 18
+        ? t('greetingAfternoon')
+        : t('greetingEvening')
 
   return (
     <div className="space-y-8">
@@ -47,10 +54,14 @@ export default async function DashboardPage() {
         <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           {greeting}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{t('title')}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Bạn có quyền truy cập vào{' '}
-          <span className="font-medium text-foreground">{modules.length}</span> tính năng.
+          {t.rich('accessCount', {
+            count: modules.length,
+            strong: (chunks) => (
+              <span className="font-medium text-foreground">{chunks}</span>
+            ),
+          })}
         </p>
       </div>
 
@@ -75,13 +86,11 @@ export default async function DashboardPage() {
 
       {/* Module access */}
       {modules.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Tài khoản của bạn chưa được cấp quyền truy cập vào tính năng nào.
-        </p>
+        <p className="text-sm text-muted-foreground">{t('noAccess')}</p>
       ) : (
         <div>
           <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Truy cập nhanh
+            {t('quickAccess')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {modules.map((m) => (

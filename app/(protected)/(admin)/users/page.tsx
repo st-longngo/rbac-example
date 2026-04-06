@@ -1,3 +1,4 @@
+import { getTranslations, getLocale } from 'next-intl/server'
 import { requirePermission } from '@/lib/dal'
 import { prisma } from '@/lib/prisma'
 import {
@@ -14,6 +15,12 @@ import { Badge } from '@/components/ui/badge'
 
 export default async function UsersPage() {
   await requirePermission('READ', 'USERS')
+  const [t, locale] = await Promise.all([
+    getTranslations('users'),
+    getLocale(),
+  ])
+
+  const dateLocale = locale === 'vi' ? 'vi-VN' : 'en-US'
 
   const users = await prisma.user.findMany({
     select: {
@@ -32,9 +39,14 @@ export default async function UsersPage() {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Người dùng</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{users.length}</span> người dùng trong hệ thống
+          {t.rich('count', {
+            count: users.length,
+            strong: (chunks) => (
+              <span className="font-medium text-foreground">{chunks}</span>
+            ),
+          })}
         </p>
       </div>
 
@@ -43,12 +55,12 @@ export default async function UsersPage() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[200px]">Tên</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Roles</TableHead>
-              <TableHead className="w-[120px]">Ngày tạo</TableHead>
+              <TableHead className="w-[200px]">{t('table.name')}</TableHead>
+              <TableHead>{t('table.email')}</TableHead>
+              <TableHead>{t('table.roles')}</TableHead>
+              <TableHead className="w-[120px]">{t('table.createdAt')}</TableHead>
               <PermissionGate action="MANAGE" resource="USERS">
-                <TableHead className="w-[100px] text-right">ID</TableHead>
+                <TableHead className="w-[100px] text-right">{t('table.id')}</TableHead>
               </PermissionGate>
             </TableRow>
           </TableHeader>
@@ -57,7 +69,7 @@ export default async function UsersPage() {
               <TableRow key={user.id} className="transition-colors duration-150">
                 <TableCell className="font-medium">
                   {user.name ?? (
-                    <span className="text-muted-foreground italic text-sm">Chưa đặt tên</span>
+                    <span className="text-muted-foreground italic text-sm">{t('noName')}</span>
                   )}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{user.email}</TableCell>
@@ -69,13 +81,13 @@ export default async function UsersPage() {
                       ))
                     ) : (
                       <Badge variant="outline" className="text-muted-foreground text-xs">
-                        Không có role
+                        {t('noRole')}
                       </Badge>
                     )}
                   </div>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {user.createdAt.toLocaleDateString('vi-VN')}
+                  {user.createdAt.toLocaleDateString(dateLocale)}
                 </TableCell>
                 <PermissionGate action="MANAGE" resource="USERS">
                   <TableCell className="text-right">
