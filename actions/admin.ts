@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { AssignRoleSchema } from '@/lib/definitions'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import type { Action, Resource } from '@prisma/client'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -77,14 +78,15 @@ export async function createRoleAction(
     return { errors: parsed.error.flatten().fieldErrors }
   }
 
-  const existing = await prisma.role.findUnique({
-    where: { name: parsed.data.name },
-  })
-  if (existing) {
-    return { errors: { name: ['Role này đã tồn tại'] } }
+  try {
+    await prisma.role.create({ data: parsed.data })
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      return { errors: { name: ['Role này đã tồn tại'] } }
+    }
+    return { errors: { name: ['Đã xảy ra lỗi. Vui lòng thử lại.'] } }
   }
 
-  await prisma.role.create({ data: parsed.data })
   revalidatePath('/roles')
   return { success: true }
 }
@@ -99,18 +101,20 @@ export async function assignPermissionToRoleAction(
 ) {
   await requirePermission('MANAGE', 'ROLES')
 
-  const permission = await prisma.permission.upsert({
-    where: { action_resource: { action, resource } },
-    update: {},
-    create: { action, resource },
-  })
+  await prisma.$transaction(async (tx) => {
+    const permission = await tx.permission.upsert({
+      where: { action_resource: { action, resource } },
+      update: {},
+      create: { action, resource },
+    })
 
-  await prisma.rolePermission.upsert({
-    where: {
-      roleId_permissionId: { roleId, permissionId: permission.id },
-    },
-    update: {},
-    create: { roleId, permissionId: permission.id },
+    await tx.rolePermission.upsert({
+      where: {
+        roleId_permissionId: { roleId, permissionId: permission.id },
+      },
+      update: {},
+      create: { roleId, permissionId: permission.id },
+    })
   })
 
   revalidatePath('/roles')

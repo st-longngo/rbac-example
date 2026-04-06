@@ -7,12 +7,20 @@ import { unauthorized, forbidden } from 'next/navigation'
 import type { Action, Resource } from '@prisma/client'
 
 // ─────────────────────────────────────────────────────────────────────────────
+// getAuthSession (private)
+// Single cache()-wrapped call to auth() per render pass.
+// Both verifySession and checkPermission consume this to avoid duplicate
+// auth() invocations when both are called in the same component tree.
+// ─────────────────────────────────────────────────────────────────────────────
+const getAuthSession = cache(async () => auth())
+
+// ─────────────────────────────────────────────────────────────────────────────
 // verifySession
 // Get current session. Throw unauthorized() if missing.
 // Wrapped in cache() to memoize per render pass.
 // ─────────────────────────────────────────────────────────────────────────────
 export const verifySession = cache(async () => {
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     unauthorized() // → renders app/unauthorized.tsx (HTTP 401)
@@ -66,7 +74,7 @@ export const getCurrentUser = cache(async () => {
 // ─────────────────────────────────────────────────────────────────────────────
 export const checkPermission = cache(
   async (action: Action, resource: Resource): Promise<boolean> => {
-    const session = await auth()
+    const session = await getAuthSession()
     if (!session?.user?.permissions) return false
     return hasPermission(session.user.permissions, action, resource)
   },

@@ -1,0 +1,10 @@
+{
+  "chat.instructionsFilesLocations": {
+    ".setup/instructions": false,
+    ".github/instructions": true,
+  },
+  "chat.promptFilesLocations": {
+    ".setup/prompts": true,
+    ".github/prompts": true,
+  }
+}

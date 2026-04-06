@@ -10,7 +10,6 @@ const authRoutes = ['/login', '/register']
 // Detailed permission checks happen in Server Components via DAL.
 export const proxy = auth(function proxy(req) {
   const { nextUrl } = req as NextRequest
-  // @ts-expect-error — auth() injects .auth into the request
   const isLoggedIn = !!(req as NextRequest & { auth: unknown }).auth
 
   const isProtected = protectedRoutes.some((r) =>

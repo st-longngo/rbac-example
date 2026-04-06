@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Build Check",
+      "type": "shell",
+      "command": "npm run build",
+      "problemMatcher": ["$tsc", "$eslint-stylish"],
+      "group": "build"
+    },
+    {
+      "label": "Quick Build Test",
+      "type": "shell",
+      "command": "npx next build --no-lint",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Final Build Test",
+      "type": "shell",
+      "command": "npx tsc --noEmit",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "TypeScript Check Only",
+      "type": "shell",
+      "command": "npx tsc --noEmit --skipLibCheck --project tsconfig.json",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Clean and Build",
+      "type": "shell",
+      "command": "rm -rf .next && npx next build",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Test Build After Fixes",
+      "type": "shell",
+      "command": "npx next build",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Final TypeScript Check",
+      "type": "shell",
+      "command": "npx tsc --noEmit",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    }
+  ]
+}

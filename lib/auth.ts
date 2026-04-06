@@ -4,12 +4,13 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { LoginFormSchema } from '@/lib/definitions'
+import type { SessionPermission } from '@/lib/definitions'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
 
   session: {
-    strategy: 'database', // Store session in DB — supports revocation
+    strategy: 'jwt', // Credentials provider requires JWT strategy
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
@@ -44,11 +45,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    async session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id
+    async jwt({ token, user }) {
+      // On sign-in, user object is available — fetch and embed roles/permissions
+      if (user?.id) {
+        token.id = user.id
 
-        // Embed roles + permissions into session object
         const userWithRoles = await prisma.user.findUnique({
           where: { id: user.id },
           include: {
@@ -66,15 +67,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         })
 
-        session.user.roles =
-          userWithRoles?.userRoles.map((ur) => ur.role.name) ?? []
-        session.user.permissions =
-          userWithRoles?.userRoles.flatMap((ur) =>
-            ur.role.rolePermissions.map((rp) => ({
+        token.roles = userWithRoles?.userRoles.map((ur) => ur.role.name) ?? []
+        token.permissions = userWithRoles?.userRoles.flatMap((ur) =>
+          ur.role.rolePermissions.map(
+            (rp): SessionPermission => ({
               action: rp.permission.action,
               resource: rp.permission.resource,
-            })),
-          ) ?? []
+            }),
+          ),
+        ) ?? []
+      }
+      return token
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = (token.id as string) ?? ''
+        session.user.roles = (token.roles as string[]) ?? []
+        session.user.permissions = (token.permissions as SessionPermission[]) ?? []
       }
       return session
     },
