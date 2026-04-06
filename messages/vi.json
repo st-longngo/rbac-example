@@ -82,10 +82,61 @@
       "email": "Email",
       "roles": "Roles",
       "createdAt": "Ngày tạo",
-      "id": "ID"
+      "id": "ID",
+      "actions": "Thao tác"
     },
     "noName": "Chưa đặt tên",
-    "noRole": "Không có role"
+    "noRole": "Không có role",
+    "actions": {
+      "create": "Tạo người dùng",
+      "edit": "Sửa",
+      "viewDetail": "Xem"
+    },
+    "create": {
+      "title": "Tạo người dùng",
+      "description": "Thêm một tài khoản người dùng mới vào hệ thống.",
+      "nameLabel": "Họ tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "emailLabel": "Email",
+      "emailPlaceholder": "user@example.com",
+      "passwordLabel": "Mật khẩu",
+      "rolesLabel": "Vai trò",
+      "noRolesAvailable": "Không có vai trò nào",
+      "submit": "Tạo người dùng",
+      "submitting": "Đang tạo...",
+      "success": "Tạo người dùng thành công.",
+      "errors": {
+        "emailTaken": "Email này đã được đăng ký.",
+        "generic": "Tạo người dùng thất bại. Vui lòng thử lại."
+      }
+    },
+    "edit": {
+      "title": "Sửa người dùng",
+      "description": "Cập nhật thông tin và phân quyền của người dùng.",
+      "nameLabel": "Họ tên",
+      "emailLabel": "Email",
+      "rolesLabel": "Vai trò",
+      "submit": "Lưu thay đổi",
+      "submitting": "Đang lưu...",
+      "success": "Cập nhật người dùng thành công.",
+      "errors": {
+        "emailTaken": "Email này đã được sử dụng bởi tài khoản khác.",
+        "lastAdmin": "Không thể xóa vai trò admin của quản trị viên cuối cùng.",
+        "generic": "Cập nhật người dùng thất bại. Vui lòng thử lại."
+      }
+    },
+    "detail": {
+      "title": "Chi tiết người dùng",
+      "nameLabel": "Họ tên",
+      "emailLabel": "Email",
+      "createdAtLabel": "Thành viên từ",
+      "rolesLabel": "Vai trò",
+      "permissionsLabel": "Quyền hạn",
+      "noName": "Chưa đặt tên",
+      "noRoles": "Chưa được phân vai trò",
+      "noPermissions": "Không có quyền",
+      "editButton": "Sửa người dùng"
+    }
   },
   "roles": {
     "title": "Phân quyền",

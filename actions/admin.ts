@@ -2,11 +2,13 @@
 
 import { requirePermission } from '@/lib/dal'
 import { prisma } from '@/lib/prisma'
-import { AssignRoleSchema } from '@/lib/definitions'
+import { AssignRoleSchema, CreateUserSchema, EditUserSchema } from '@/lib/definitions'
+import type { AdminFormState } from '@/lib/definitions'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import type { Action, Resource } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // assignRoleAction — requires MANAGE ROLES
@@ -128,4 +130,151 @@ export async function deleteUserAction(userId: string) {
 
   await prisma.user.delete({ where: { id: userId } })
   revalidatePath('/users')
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// createUserAction — requires CREATE USERS
+// Creates a new user account with optional role assignments.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function createUserAction(
+  prevState: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  await requirePermission('CREATE', 'USERS')
+
+  const raw = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    roleIds: formData.getAll('roleIds') as string[],
+  }
+
+  const parsed = CreateUserSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors }
+  }
+
+  const { name, email, password, roleIds } = parsed.data
+
+  const hashedPassword = await bcrypt.hash(password, 12)
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name: name || null,
+          email,
+          hashedPassword,
+        },
+        select: { id: true },
+      })
+
+      if (roleIds.length > 0) {
+        await tx.userRole.createMany({
+          data: roleIds.map((roleId) => ({ userId: user.id, roleId })),
+          skipDuplicates: true,
+        })
+      }
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return { errors: { email: ['This email is already registered.'] } }
+    }
+    return { errors: { general: ['Failed to create user. Please try again.'] } }
+  }
+
+  revalidatePath('/users')
+  return { message: 'User created successfully.' }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// editUserAction — requires UPDATE USERS
+// Updates a user's name, email, and role assignments.
+// Enforces the last-admin guard to prevent self-lockout.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function editUserAction(
+  prevState: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  await requirePermission('UPDATE', 'USERS')
+
+  const raw = {
+    userId: formData.get('userId'),
+    name: formData.get('name'),
+    email: formData.get('email'),
+    roleIds: formData.getAll('roleIds') as string[],
+  }
+
+  const parsed = EditUserSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors }
+  }
+
+  const { userId, name, email, roleIds } = parsed.data
+
+  // Last-admin guard: if the user currently has the admin role and it is being
+  // removed, ensure at least one other admin remains in the system.
+  const currentRoles = await prisma.userRole.findMany({
+    where: { userId },
+    include: { role: { select: { name: true } } },
+  })
+
+  const hadAdminRole = currentRoles.some((ur) => ur.role.name === 'admin')
+  const willHaveAdminRole = roleIds.length > 0
+    ? await prisma.role
+        .findMany({ where: { id: { in: roleIds }, name: 'admin' }, select: { id: true } })
+        .then((r) => r.length > 0)
+    : false
+
+  if (hadAdminRole && !willHaveAdminRole) {
+    // Check if this user is the sole admin
+    const adminCount = await prisma.userRole.count({
+      where: {
+        role: { name: 'admin' },
+        userId: { not: userId },
+      },
+    })
+    if (adminCount === 0) {
+      return {
+        errors: {
+          general: ['Cannot remove the admin role from the last administrator.'],
+        },
+      }
+    }
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Update name and email
+      await tx.user.update({
+        where: { id: userId },
+        data: { name: name || null, email },
+        select: { id: true },
+      })
+
+      // Replace role assignments atomically
+      await tx.userRole.deleteMany({ where: { userId } })
+
+      if (roleIds.length > 0) {
+        await tx.userRole.createMany({
+          data: roleIds.map((roleId) => ({ userId, roleId })),
+          skipDuplicates: true,
+        })
+      }
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return { errors: { email: ['This email is already used by another account.'] } }
+    }
+    return { errors: { general: ['Failed to update user. Please try again.'] } }
+  }
+
+  revalidatePath('/users')
+  return { message: 'User updated successfully.' }
 }

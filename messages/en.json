@@ -82,10 +82,61 @@
       "email": "Email",
       "roles": "Roles",
       "createdAt": "Created",
-      "id": "ID"
+      "id": "ID",
+      "actions": "Actions"
     },
     "noName": "No name set",
-    "noRole": "No role"
+    "noRole": "No role",
+    "actions": {
+      "create": "Create User",
+      "edit": "Edit",
+      "viewDetail": "View"
+    },
+    "create": {
+      "title": "Create User",
+      "description": "Add a new user account to the system.",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "John Smith",
+      "emailLabel": "Email",
+      "emailPlaceholder": "user@example.com",
+      "passwordLabel": "Password",
+      "rolesLabel": "Roles",
+      "noRolesAvailable": "No roles available",
+      "submit": "Create User",
+      "submitting": "Creating...",
+      "success": "User created successfully.",
+      "errors": {
+        "emailTaken": "This email is already registered.",
+        "generic": "Failed to create user. Please try again."
+      }
+    },
+    "edit": {
+      "title": "Edit User",
+      "description": "Update the user's information and role assignments.",
+      "nameLabel": "Full Name",
+      "emailLabel": "Email",
+      "rolesLabel": "Roles",
+      "submit": "Save Changes",
+      "submitting": "Saving...",
+      "success": "User updated successfully.",
+      "errors": {
+        "emailTaken": "This email is already used by another account.",
+        "lastAdmin": "Cannot remove the admin role from the last administrator.",
+        "generic": "Failed to update user. Please try again."
+      }
+    },
+    "detail": {
+      "title": "User Detail",
+      "nameLabel": "Full Name",
+      "emailLabel": "Email",
+      "createdAtLabel": "Member since",
+      "rolesLabel": "Roles",
+      "permissionsLabel": "Permissions",
+      "noName": "No name set",
+      "noRoles": "No roles assigned",
+      "noPermissions": "No permissions",
+      "editButton": "Edit User"
+    }
   },
   "roles": {
     "title": "Roles & Permissions",

@@ -1,8 +1,7 @@
 import { getLocale } from 'next-intl/server'
 import { getCurrentUser } from '@/lib/dal'
-import { LogoutButton } from '@/components/auth/LogoutButton'
+import { AvatarDropdown } from '@/components/layout/AvatarDropdown'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import type { Locale } from '@/lib/locale'
 
@@ -32,19 +31,11 @@ export async function Header() {
       <div className="flex items-center gap-3">
         <LanguageSwitcher currentLocale={locale} />
         <Separator orientation="vertical" className="h-5" />
-        <div className="flex items-center gap-3">
-          <Avatar className="h-7 w-7">
-            <AvatarFallback className="bg-foreground text-background text-[10px] font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="hidden sm:block">
-            <p className="text-xs font-medium leading-none">{user?.name ?? 'User'}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground leading-none">{user?.email}</p>
-          </div>
-        </div>
-        <Separator orientation="vertical" className="h-5" />
-        <LogoutButton />
+        <AvatarDropdown
+          initials={initials}
+          name={user?.name ?? 'User'}
+          email={user?.email ?? ''}
+        />
       </div>
     </header>
   )

@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server'
-import { requirePermission } from '@/lib/dal'
+import { requirePermission, checkPermission, getAllRoles } from '@/lib/dal'
 import { prisma } from '@/lib/prisma'
 import {
   Table,
@@ -10,14 +10,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { RoleBadge } from '@/components/rbac/RoleBadge'
-import { PermissionGate } from '@/components/rbac/PermissionGate'
 import { Badge } from '@/components/ui/badge'
+import { CreateUserDialog } from '@/components/users/CreateUserDialog'
+import { UserActions } from '@/components/users/UserActions'
 
 export default async function UsersPage() {
   await requirePermission('READ', 'USERS')
-  const [t, locale] = await Promise.all([
+
+  const [t, locale, canCreate, canEdit, roles] = await Promise.all([
     getTranslations('users'),
     getLocale(),
+    checkPermission('CREATE', 'USERS'),
+    checkPermission('UPDATE', 'USERS'),
+    getAllRoles(),
   ])
 
   const dateLocale = locale === 'vi' ? 'vi-VN' : 'en-US'
@@ -29,7 +34,15 @@ export default async function UsersPage() {
       email: true,
       createdAt: true,
       userRoles: {
-        include: { role: true },
+        include: {
+          role: {
+            include: {
+              rolePermissions: {
+                include: { permission: true },
+              },
+            },
+          },
+        },
       },
     },
     orderBy: { createdAt: 'desc' },
@@ -37,17 +50,20 @@ export default async function UsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          {t.rich('count', {
-            count: users.length,
-            strong: (chunks) => (
-              <span className="font-medium text-foreground">{chunks}</span>
-            ),
-          })}
-        </p>
+      {/* Page heading + Create button */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {t.rich('count', {
+              count: users.length,
+              strong: (chunks) => (
+                <span className="font-medium text-foreground">{chunks}</span>
+              ),
+            })}
+          </p>
+        </div>
+        {canCreate && <CreateUserDialog roles={roles} />}
       </div>
 
       {/* Table */}
@@ -59,9 +75,9 @@ export default async function UsersPage() {
               <TableHead>{t('table.email')}</TableHead>
               <TableHead>{t('table.roles')}</TableHead>
               <TableHead className="w-[120px]">{t('table.createdAt')}</TableHead>
-              <PermissionGate action="MANAGE" resource="USERS">
-                <TableHead className="w-[100px] text-right">{t('table.id')}</TableHead>
-              </PermissionGate>
+              <TableHead className="w-[160px] text-right">
+                {t('table.actions')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,10 +85,14 @@ export default async function UsersPage() {
               <TableRow key={user.id} className="transition-colors duration-150">
                 <TableCell className="font-medium">
                   {user.name ?? (
-                    <span className="text-muted-foreground italic text-sm">{t('noName')}</span>
+                    <span className="italic text-muted-foreground text-sm">
+                      {t('noName')}
+                    </span>
                   )}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{user.email}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {user.email}
+                </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {user.userRoles.length > 0 ? (
@@ -80,7 +100,10 @@ export default async function UsersPage() {
                         <RoleBadge key={ur.roleId} role={ur.role.name} />
                       ))
                     ) : (
-                      <Badge variant="outline" className="text-muted-foreground text-xs">
+                      <Badge
+                        variant="outline"
+                        className="text-muted-foreground text-xs"
+                      >
                         {t('noRole')}
                       </Badge>
                     )}
@@ -89,13 +112,14 @@ export default async function UsersPage() {
                 <TableCell className="text-xs text-muted-foreground">
                   {user.createdAt.toLocaleDateString(dateLocale)}
                 </TableCell>
-                <PermissionGate action="MANAGE" resource="USERS">
-                  <TableCell className="text-right">
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {user.id.slice(0, 8)}…
-                    </span>
-                  </TableCell>
-                </PermissionGate>
+                <TableCell>
+                  <UserActions
+                    user={user}
+                    roles={roles}
+                    canEdit={canEdit}
+                    locale={locale}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
