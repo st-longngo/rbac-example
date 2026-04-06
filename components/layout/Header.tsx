@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/dal'
 import { LogoutButton } from '@/components/auth/LogoutButton'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
 
 /**
  * Renders the top header bar with the current user's name, email, and logout button.
@@ -19,16 +20,21 @@ export async function Header() {
     : 'U'
 
   return (
-    <header className="flex h-14 items-center justify-between border-b px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-6">
       <div />
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          <p className="text-sm font-medium">{user?.name ?? 'User'}</p>
-          <p className="text-xs text-muted-foreground">{user?.email}</p>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-7 w-7">
+            <AvatarFallback className="bg-foreground text-background text-[10px] font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="hidden sm:block">
+            <p className="text-xs font-medium leading-none">{user?.name ?? 'User'}</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground leading-none">{user?.email}</p>
+          </div>
         </div>
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-        </Avatar>
+        <Separator orientation="vertical" className="h-5" />
         <LogoutButton />
       </div>
     </header>
