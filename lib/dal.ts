@@ -94,3 +94,14 @@ export async function requirePermission(
     forbidden() // → renders app/forbidden.tsx (HTTP 403)
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getAllRoles
+// Fetch all roles (id + name) for use in admin forms.
+// ─────────────────────────────────────────────────────────────────────────────
+export const getAllRoles = cache(async () => {
+  return prisma.role.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+  })
+})

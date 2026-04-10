@@ -68,3 +68,46 @@ export const AssignRoleSchema = z.object({
   userId: z.string().cuid(),
   roleId: z.string().cuid(),
 })
+
+// ─── User Management Schemas ──────────────────────────────────────────────────
+
+export const CreateUserSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters' })
+    .max(50, { message: 'Name must not exceed 50 characters' })
+    .optional()
+    .or(z.literal('')),
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' }),
+  roleIds: z.array(z.string().cuid()).default([]),
+})
+
+export const EditUserSchema = z.object({
+  userId: z.string().cuid(),
+  name: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters' })
+    .max(50, { message: 'Name must not exceed 50 characters' })
+    .optional()
+    .or(z.literal('')),
+  email: z.string().email({ message: 'Invalid email address' }),
+  roleIds: z.array(z.string().cuid()).default([]),
+})
+
+export type AdminFormState =
+  | {
+      errors?: {
+        name?: string[]
+        email?: string[]
+        password?: string[]
+        roleIds?: string[]
+        general?: string[]
+      }
+      message?: string
+    }
+  | undefined
